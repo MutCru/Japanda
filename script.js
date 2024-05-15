@@ -442,6 +442,11 @@ async function createPairGame() {
 
     // Add an event listener to the tile
     tile.addEventListener("click", function () {
+        // 13052024 Mut : Add speech
+        const voice = new SpeechSynthesisUtterance(tile.dataset.character);
+        voice.lang = "ja-JP";
+        speechSynthesis.speak(voice);
+
       // If the game is not flipping tiles and the tile is not already flipped
       if (!isFlipping && this.textContent === "") {
         this.textContent = this.dataset.character; // Show the character
