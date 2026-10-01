@@ -413,17 +413,13 @@ againButton.addEventListener("click", () => {
 async function createPairGame() {
   // const response = await fetch("data.json");
   // const data = await response.json();
-  let characters = [];
 
   // Merge the hiragana and katakana arrays into one array
-  characters = [...data.hiragana, ...data.katakana];
-  const selectedCharacters = [];
+  const characters = [...data.hiragana, ...data.katakana];
 
-  // Select 10 random characters
-  for (let i = 0; i < 10; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    selectedCharacters.push(characters[randomIndex]);
-  }
+  // Shuffle characters copy to select 10 unique random characters without duplicates
+  const shuffledCharacters = [...characters].sort(() => Math.random() - 0.5);
+  const selectedCharacters = shuffledCharacters.slice(0, 10);
 
   // Duplicate the selected characters to create pairs
   const pairs = [...selectedCharacters, ...selectedCharacters];
@@ -442,13 +438,15 @@ async function createPairGame() {
 
     // Add an event listener to the tile
     tile.addEventListener("click", function () {
-        // 13052024 Mut : Add speech
-        const voice = new SpeechSynthesisUtterance(tile.dataset.character);
-        voice.lang = "ja-JP";
-        speechSynthesis.speak(voice);
+      // If the game is not flipping tiles and the tile is not already flipped/matched
+      if (!isFlipping && !this.classList.contains("matched") && this.textContent === "") {
+        // Speak character voice only when flipping an unrevealed tile
+        if ("speechSynthesis" in window) {
+          const voice = new SpeechSynthesisUtterance(this.dataset.character);
+          voice.lang = "ja-JP";
+          speechSynthesis.speak(voice);
+        }
 
-      // If the game is not flipping tiles and the tile is not already flipped
-      if (!isFlipping && this.textContent === "") {
         this.textContent = this.dataset.character; // Show the character
 
         // Check if there's another flipped tile
